@@ -32,7 +32,6 @@ export function Profile() {
         aspect: [4, 4],
         allowsEditing: true,
       })
-      console.log(photoSelected)
       if (photoSelected.canceled) {
         return
       }

@@ -1,8 +1,18 @@
-import { VStack, Image, Text, Center, Heading, ScrollView } from 'native-base'
+import { useState } from 'react'
+import {
+  VStack,
+  Image,
+  Text,
+  Center,
+  Heading,
+  ScrollView,
+  useToast,
+} from 'native-base'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Controller, useForm } from 'react-hook-form'
 import { api } from '@services/api'
+import { useAuth } from '@hooks/useAuth'
 
 import { AuthNavigatorRoutesProps } from '@routes/auth.routes'
 
@@ -12,6 +22,7 @@ import LogoSvg from '@assets/logo.svg'
 import { Input } from '@components/Input'
 import { Button } from '@components/Button'
 import { useNavigation } from '@react-navigation/native'
+import { AppError } from '@utils/AppError'
 
 type FormDataProps = {
   email: string
@@ -24,7 +35,10 @@ const signInSchema = yup.object({
 })
 
 export function SignIn() {
+  const [isLoading, setIsLoading] = useState(false)
+  const { signIn } = useAuth()
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
+  const toast = useToast()
   const {
     control,
     handleSubmit,
@@ -35,8 +49,21 @@ export function SignIn() {
 
   async function handleSignIn({ email, password }: FormDataProps) {
     try {
-      console.log(`email ${email} e senha: ${password}`)
-    } catch (error) {}
+      setIsLoading(true)
+      await signIn(email, password)
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError
+        ? error.message
+        : 'Não foi possível entrar. Tente novamente mais tarde.'
+      setIsLoading(false)
+
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500',
+      })
+    }
   }
 
   function handleNewAccount() {
@@ -94,7 +121,11 @@ export function SignIn() {
             )}
           />
 
-          <Button title="Acessar" onPress={handleSubmit(handleSignIn)} />
+          <Button
+            title="Acessar"
+            isLoading={isLoading}
+            onPress={handleSubmit(handleSignIn)}
+          />
         </Center>
         <Center mt={24}>
           <Text color="gray.100" fontSize="sm" mb={3} fontFamily="body">
