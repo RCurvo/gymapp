@@ -16,7 +16,7 @@ import { Profile } from '@screens/Profile'
 
 type AppRoutesType = {
   home: undefined
-  exercise: undefined
+  exercise: { exerciseId: string }
   profile: undefined
   history: undefined
 }
