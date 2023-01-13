@@ -11,7 +11,6 @@ import {
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Controller, useForm } from 'react-hook-form'
-import { api } from '@services/api'
 import { useAuth } from '@hooks/useAuth'
 
 import { AuthNavigatorRoutesProps } from '@routes/auth.routes'
